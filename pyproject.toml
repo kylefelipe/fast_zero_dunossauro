@@ -1,0 +1,56 @@
+[project]
+name = "fast-zero"
+version = "0.1.0"
+description = ""
+authors = [{ name = "Kyle Felipe", email = "kylefelipe@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.12, <4.0"
+dependencies = ["fastapi[standard] (>=0.115.12,<0.116.0)"]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+taskipy = "^1.14.1"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+ruff = "^0.11.8"
+ignr = "^2.2"
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+preview = true
+select = [
+    "I",  # isort
+    "F",  # pyflakes
+    "E",  # pycodestyle
+    "W",  # pycodestyle
+    "PL", # pylint
+    "PT", # flake8-codestyle
+]
+
+[tool.ruff.format]
+preview = true
+quote-style = "single"
+
+# Configura o pytest
+
+[tool.pytest.ini_options]
+python_path = "."
+addopts = "-p no:warnings"
+
+# Configura o taskipy
+
+[tool.taskipy.tasks]
+lint = "ruff check"
+pre_format = "ruff check --fix"
+format = "ruff format"
+ron = "fastapi dev fast_zero/app.py"
+pre_test = "task lint"
+test = "pytest -s -x --cov=fast_zero -vv"
+post_test = "coverage html"
