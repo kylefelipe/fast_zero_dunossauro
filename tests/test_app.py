@@ -2,17 +2,17 @@ from http import HTTPStatus
 
 
 def test_root_deve_retornar_ok_e_ola_mundo(client):
-    response = client.get("/")
+    response = client.get('/')
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {"message": "Olá Mundo"}
+    assert response.json() == {'message': 'Olá Mundo'}
 
 
 def test_send_html_deve_retornar_ok_e_html(client):
-    response = client.get("/html")
+    response = client.get('/html')
 
     assert response.status_code == HTTPStatus.OK
-    assert response.headers["content-type"] == "text/html; charset=utf-8"
+    assert response.headers['content-type'] == 'text/html; charset=utf-8'
     assert (
         response.text
         == """
@@ -30,32 +30,32 @@ def test_send_html_deve_retornar_ok_e_html(client):
 
 def test_create_user(client):
     response = client.post(
-        "/users/",
+        '/users/',
         json={
-            "username": "testuser",
-            "email": "manahmanah@muppets.com",
-            "password": "testpassword",
+            'username': 'testuser',
+            'email': 'manahmanah@muppets.com',
+            'password': 'testpassword',
         },
     )
 
     assert response.status_code == HTTPStatus.CREATED
     assert response.json() == {
-        "username": "testuser",
-        "email": "manahmanah@muppets.com",
-        "id": 1,
+        'username': 'testuser',
+        'email': 'manahmanah@muppets.com',
+        'id': 1,
     }
 
 
 def test_read_users(client):
-    response = client.get("/users/")
+    response = client.get('/users/')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        "users": [
+        'users': [
             {
-                "username": "testuser",
-                "email": "manahmanah@muppets.com",
-                "id": 1,
+                'username': 'testuser',
+                'email': 'manahmanah@muppets.com',
+                'id': 1,
             }
         ]
     }
@@ -63,23 +63,23 @@ def test_read_users(client):
 
 def test_update_user(client):
     response = client.put(
-        "/users/1",
+        '/users/1',
         json={
-            "username": "updateduser",
-            "email": "manahmanah@muppets.com",
-            "password": "testpassword",
+            'username': 'updateduser',
+            'email': 'manahmanah@muppets.com',
+            'password': 'testpassword',
         },
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        "username": "updateduser",
-        "email": "manahmanah@muppets.com",
-        "id": 1,
+        'username': 'updateduser',
+        'email': 'manahmanah@muppets.com',
+        'id': 1,
     }
 
 
 def test_delete_user(client):
-    response = client.delete("/users/1")
+    response = client.delete('/users/1')
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {"message": "User deleted"}
+    assert response.json() == {'message': 'User deleted'}
