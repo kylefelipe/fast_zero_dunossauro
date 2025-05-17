@@ -11,6 +11,8 @@ dependencies = [
     "pydantic-settings (>=2.9.1,<3.0.0)",
     "isort (>=6.0.1,<7.0.0)",
     "alembic (>=1.15.2,<2.0.0)",
+    "pyjwt (>=2.10.1,<3.0.0)",
+    "pwdlib[argon2] (>=0.2.1,<0.3.0)",
 ]
 
 
@@ -59,4 +61,5 @@ format = "ruff format"
 run = "fastapi dev fast_zero/app.py"
 pre_test = "task lint"
 test = "pytest -s -x --cov=fast_zero -vv"
+testcl = "clear -x && task test" # limpa o terminal e roda os testes
 post_test = "coverage html"
