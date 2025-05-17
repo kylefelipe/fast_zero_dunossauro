@@ -24,12 +24,5 @@ class UserPublic(BaseModel):
     )
 
 
-class UserDB(UserSchema):
-    id: int
-
-    def model_dump(self, *args, **kwargs):
-        return super().model_dump(*args, **kwargs)
-
-
 class UserList(BaseModel):
     users: list[UserPublic]
