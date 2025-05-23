@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session as SQLAlchemySession
 
 from fast_zero.database import get_session
 from fast_zero.models import User
@@ -23,9 +23,12 @@ from fast_zero.security import (
 router = APIRouter(prefix="/users", tags=["users"])
 
 Session = Annotated[
-    Session,
+    SQLAlchemySession,
     Depends(get_session),
 ]
+
+CurrentUser = Annotated[User, Depends(get_current_user)]
+FilterPageQuery = Annotated[FilterPage, Query()]
 
 
 @router.post("/", status_code=HTTPStatus.CREATED, response_model=UserPublic)
@@ -63,7 +66,7 @@ def create_user(user: UserSchema, session: Session):
 @router.get("/", status_code=HTTPStatus.OK, response_model=UserList)
 def read_users(
     session: Session,
-    filter_users: Annotated[FilterPage, Query()],
+    filter_users: FilterPageQuery,
 ):
     users = session.scalars(
         select(User).offset(filter_users.skip).limit(filter_users.limit)
@@ -95,7 +98,7 @@ def update_user(
     user_id: int,
     user: UserSchema,
     session: Session,
-    current_user: User = Depends(get_current_user),
+    current_user: CurrentUser,
 ):
     """Atualiza um usuário existente."""
 
@@ -127,7 +130,7 @@ def update_user(
 def delete_user(
     user_id: int,
     session: Session,
-    current_user: User = Depends(get_current_user),
+    current_user: CurrentUser,
 ):
     """Deleta um usuário existente."""
     if current_user.id != user_id:

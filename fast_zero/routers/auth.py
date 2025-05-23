@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session as SQLAlchemySession
 
 from fast_zero.database import get_session
 from fast_zero.models import User
@@ -23,7 +23,7 @@ OAuth2From = Annotated[
 ]
 
 Session = Annotated[
-    Session,
+    SQLAlchemySession,
     Depends(get_session),
 ]
 
