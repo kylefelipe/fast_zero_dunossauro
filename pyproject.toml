@@ -7,12 +7,13 @@ readme = "README.md"
 requires-python = ">=3.12, <4.0"
 dependencies = [
     "fastapi[standard] (>=0.115.12,<0.116.0)",
-    "sqlalchemy (>=2.0.40,<3.0.0)",
+    "sqlalchemy[asyncio] (>=2.0.41,<3.0.0)",
     "pydantic-settings (>=2.9.1,<3.0.0)",
     "isort (>=6.0.1,<7.0.0)",
     "alembic (>=1.15.2,<2.0.0)",
     "pyjwt (>=2.10.1,<3.0.0)",
     "pwdlib[argon2] (>=0.2.1,<0.3.0)",
+    "aiosqlite (>=0.21.0,<0.22.0)",
 ]
 
 
@@ -26,6 +27,7 @@ pytest = "^8.3.5"
 pytest-cov = "^6.1.1"
 ruff = "^0.11.8"
 ignr = "^2.2"
+pytest-asyncio = "^0.26.0"
 
 [tool.ruff]
 line-length = 79
@@ -34,13 +36,13 @@ extend-exclude = ["migrations"]
 [tool.ruff.lint]
 preview = true
 select = [
-    "I",  # isort
-    "F",  # pyflakes
-    "E",  # pycodestyle
-    "W",  # pycodestyle
-    "PL", # pylint
-    "PT", # flake8-codestyle
-    "FAST" # fastapi
+    "I",    # isort
+    "F",    # pyflakes
+    "E",    # pycodestyle
+    "W",    # pycodestyle
+    "PL",   # pylint
+    "PT",   # flake8-codestyle
+    "FAST", # fastapi
 ]
 
 [tool.ruff.format]
@@ -52,6 +54,7 @@ quote-style = "single"
 [tool.pytest.ini_options]
 python_path = "."
 addopts = "-p no:warnings"
+asyncio_default_fixture_loop_scope = "function"
 
 # Configura o taskipy
 
@@ -62,5 +65,8 @@ format = "ruff format"
 run = "fastapi dev fast_zero/app.py"
 pre_test = "task lint"
 test = "pytest -s -x --cov=fast_zero -vv"
-testcl = "clear -x && task test" # limpa o terminal e roda os testes
+testcl = "clear -x && task test"          # limpa o terminal e roda os testes
 post_test = "coverage html"
+
+[tool.coverage.run]
+concurrency = ["thread", "greenlet"]
