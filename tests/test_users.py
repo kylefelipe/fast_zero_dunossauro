@@ -25,11 +25,17 @@ async def test_create_user(client):
     }
 
 
-def test_read_users(client):
+def test_read_users(client, users):
     response = client.get('/users/')
 
+    users_schema = [
+        UserPublic.model_validate(user).model_dump() for user in users
+    ]
+
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {'users': []}
+    assert response.json() == {
+        "users": users_schema,
+    }
 
 
 def test_read_user(client, user):
@@ -83,22 +89,13 @@ def test_read_users_with_user(client, user):
     assert response.json() == {'users': [user_schema]}
 
 
-def test_update_integrity_error_username(client, user, token):
-    # Cria um novo usuário
-    client.post(
-        '/users/',
-        json={
-            'username': 'testuser2',
-            'email': 'testuser2@testado.com',
-            'password': 'testpassword',
-        },
-    )
+def test_update_integrity_error_username(client, user, other_user, token):
     # Aterando o user.username da fixture para o mesmo do novo usuário
     response_update = client.put(
         f'/users/{user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
-            'username': 'testuser2',
+            'username': other_user.username,
             'email': 'cobaia@laboratorio.com',
             'password': 'cobaia123',
         },
@@ -109,23 +106,14 @@ def test_update_integrity_error_username(client, user, token):
     }
 
 
-def test_update_integrity_error_email(client, user, token):
-    # Cria um novo usuário
-    client.post(
-        '/users/',
-        json={
-            'username': 'testuser3',
-            'email': 'testeuser3@testado.com',
-            'password': 'testpassword',
-        },
-    )
+def test_update_integrity_error_email(client, user, other_user, token):
     # Aterando o user.email da fixture para o mesmo do novo usuário
     response_update = client.put(
         f'/users/{user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'cobaia',
-            'email': 'testeuser3@testado.com',
+            'email': other_user.email,
             'password': 'testpassword',
         },
     )
@@ -165,7 +153,7 @@ def test_get_current_user_not_exists(client):
 
 def test_update_user_with_wrong_user(client, other_user, token):
     response = client.put(
-        f'/users/999{other_user.id}',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'bob',
@@ -179,7 +167,7 @@ def test_update_user_with_wrong_user(client, other_user, token):
 
 def test_delete_user_with_wrong_user(client, other_user, token):
     response = client.delete(
-        f'/users/999{other_user.id}',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
     )
     assert response.status_code == HTTPStatus.FORBIDDEN

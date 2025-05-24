@@ -1,3 +1,5 @@
+import secrets
+import string
 from contextlib import contextmanager
 from datetime import datetime
 
@@ -12,6 +14,12 @@ from fast_zero.app import app
 from fast_zero.database import get_session
 from fast_zero.models import User, table_registry
 from fast_zero.security import get_password_hash
+
+
+def create_password(length=8):
+    """Cria uma senha aleatória de 8 caracteres."""
+    characters = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(characters) for _ in range(length))
 
 
 @pytest.fixture
@@ -72,7 +80,7 @@ def mock_db_time():
 @pytest_asyncio.fixture
 async def user(session):
     """Fixture para criar um usuário de teste."""
-    plain_password = 'cobaia123'
+    plain_password = create_password()
     user = UserFactory(password=get_password_hash(plain_password))
     session.add(user)
     await session.commit()
@@ -85,14 +93,27 @@ async def user(session):
 @pytest_asyncio.fixture
 async def other_user(session):
     """Fixture para criar um outro usuário de teste."""
-    plain_password = 'cobaia456'
+    plain_password = create_password()
     user = UserFactory(password=get_password_hash(plain_password))
     session.add(user)
     await session.commit()
     await session.refresh(user)
-
-    user.clean_password = plain_password
     return user
+
+
+@pytest_asyncio.fixture
+async def users(session):
+    """Fixture para criar uma lista de usuários de teste."""
+    users = []
+    for _ in range(5):
+        plain_password = create_password()
+        user = UserFactory(password=get_password_hash(plain_password))
+        session.add(user)
+        await session.commit()
+        await session.refresh(user)
+        users.append(user)
+
+    return users
 
 
 @pytest.fixture
