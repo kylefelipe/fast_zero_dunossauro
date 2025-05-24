@@ -34,7 +34,7 @@ def test_read_users(client, users):
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        "users": users_schema,
+        'users': users_schema,
     }
 
 
