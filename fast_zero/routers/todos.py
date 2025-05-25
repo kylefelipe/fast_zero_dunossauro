@@ -18,8 +18,8 @@ from fast_zero.schemas import (
 from fast_zero.security import get_current_user
 
 router = APIRouter(
-    prefix="/todos",
-    tags=["Todos"],
+    prefix='/todos',
+    tags=['Todos'],
 )
 
 Session = Annotated[AsyncSession, Depends(get_session)]
@@ -28,7 +28,7 @@ TodoFilter = Annotated[FilterTodo, Query()]
 
 
 @router.get(
-    "/",
+    '/',
     status_code=HTTPStatus.OK,
     response_model=TodoList,
 )
@@ -54,11 +54,11 @@ async def list_todos(
         query.offset(filter_todo.skip).limit(filter_todo.limit)
     )
 
-    return {"todos": todos.all()}
+    return {'todos': todos.all()}
 
 
 @router.post(
-    "/",
+    '/',
     status_code=HTTPStatus.CREATED,
     response_model=TodoPublic,
 )
@@ -81,7 +81,7 @@ async def create_todo(
 
 
 @router.patch(
-    "/{todo_id}",
+    '/{todo_id}',
     status_code=HTTPStatus.OK,
     response_model=TodoPublic,
 )
@@ -100,7 +100,7 @@ async def patch_todo(
     if not db_todo:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail="Task not found",
+            detail='Task not found',
         )
 
     for key, value in todo.model_dump(exclude_unset=True).items():
@@ -113,7 +113,7 @@ async def patch_todo(
 
 
 @router.delete(
-    "/{todo_id}",
+    '/{todo_id}',
     response_model=Message,
 )
 async def delete_todo(
@@ -130,9 +130,9 @@ async def delete_todo(
     if not todo:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail="Task not found",
+            detail='Task not found',
         )
 
     await session.delete(todo)
     await session.commit()
-    return {"message": "Task has been deleted successfully."}
+    return {'message': 'Task has been deleted successfully.'}
